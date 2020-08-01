@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"testing"
+
 	//"strings"
 
 	"github.com/stretchr/testify/assert"
@@ -958,9 +959,9 @@ func TestTreeAPI(t *testing.T) {
 //
 func BenchmarkWordsTreeInsert(b *testing.B) {
 	words := loadTestFile("test/assets/words.txt")
+	tree := New()
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		tree := New()
 		for _, w := range words {
 			tree.Insert(w, w)
 		}
@@ -1016,9 +1017,9 @@ func BenchmarkWordsTreeForEach(b *testing.B) {
 
 func BenchmarkUUIDsTreeInsert(b *testing.B) {
 	words := loadTestFile("test/assets/uuid.txt")
+	tree := New()
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		tree := New()
 		for _, w := range words {
 			tree.Insert(w, w)
 		}
@@ -1065,9 +1066,9 @@ func BenchmarkUUIDsTreeForEach(b *testing.B) {
 
 func BenchmarkHSKTreeInsert(b *testing.B) {
 	words := loadTestFile("test/assets/hsk_words.txt")
+	tree := New()
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		tree := New()
 		for _, w := range words {
 			tree.Insert(w, w)
 		}
@@ -1188,7 +1189,7 @@ func TestNodesWithNullKeys16(t *testing.T) {
 		"aak\x00",
 		"aah\x00",
 		"aac\x00",
-		"aa\x00",	}
+		"aa\x00"}
 
 	for _, term := range terms {
 		tree.Insert(Key(term), term)
@@ -1222,7 +1223,6 @@ func TestNodesWithNullKeys16(t *testing.T) {
 		"aav\x00",
 		"aax\x00",
 		"aaz\x00",
-
 	}
 	traversal := []string{}
 	tree.ForEach(func(node Node) bool {
