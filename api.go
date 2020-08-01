@@ -116,3 +116,13 @@ type Tree interface {
 func New() Tree {
 	return newTree()
 }
+
+// NewFromMap returns a new tree containing the keys
+// from an existing map
+func NewFromMap(m map[string]interface{}) Tree {
+	t := newTree()
+	for k, v := range m {
+		t.Insert([]byte(k), v)
+	}
+	return t
+}
