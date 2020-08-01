@@ -91,7 +91,7 @@ type Tree interface {
 
 	// LongestPrefix is like Search, but instead of an
 	// exact match, it will return the longest prefix match.
-	LongestPrefix(key Key) (Value, bool)
+	LongestPrefix(key Key) (Key, Value, bool)
 
 	// ForEach executes a provided callback once per leaf node by default.
 	// The callback iteration is terminated if the callback function returns false.

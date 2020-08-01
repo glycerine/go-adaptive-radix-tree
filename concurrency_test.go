@@ -96,7 +96,7 @@ func TestConcurrentTreeOperations(t *testing.T) {
 	go func() {
 		t.Log("Get Longest Prefix")
 		defer wg.Done()
-		out, found := r.LongestPrefix(Key("a"))
+		_, out, found := r.LongestPrefix(Key("a"))
 		if out != "a" {
 			t.Fatalf(" failed to Longest get prefix, expected %v, got %v", "a", out)
 		}
@@ -133,7 +133,7 @@ func TestConcurrentTreeOperations(t *testing.T) {
 	go func() {
 		t.Log("Get Longest Prefix")
 		defer wg.Done()
-		out, found := r.LongestPrefix(Key("blackforest-"))
+		_, out, found := r.LongestPrefix(Key("blackforest-"))
 		if out != "blackforest-cake" {
 			t.Fatalf(" failed to Longest get prefix, expected %v, got %v", "blackforest-cake", out)
 		}

@@ -1,6 +1,9 @@
 package art
 
-import "sync"
+import (
+	"bytes"
+	"sync"
+)
 
 type tree struct {
 	// version field is updated by each tree modification
@@ -83,7 +86,11 @@ func (t *tree) Search(key Key) (Value, bool) {
 	return nil, false
 }
 
-func (t *tree) LongestPrefix(key Key) (Value, bool) {
+func (t *tree) LongestPrefix(key Key) (Key, Value, bool) {
+	if len(key) < 1 {
+		return nil, nil, false
+	}
+
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 
@@ -94,16 +101,19 @@ func (t *tree) LongestPrefix(key Key) (Value, bool) {
 		if current.isLeaf() {
 			leaf := current.leaf()
 			if leaf.match(key) {
-				return leaf.value, true
+				return leaf.key, leaf.value, true
 			}
-			return leaf.value, true
+			if t.size == 1 && !bytes.HasPrefix(key, leaf.key) {
+				return nil, nil, false
+			}
+			return leaf.key, leaf.value, true
 		}
 
 		node := current.node()
 		if node.prefixLen > 0 {
 			prefixLen := node.match(key, depth)
 			if prefixLen != min(node.prefixLen, MaxPrefixLen) {
-				return nil, false
+				return nil, nil, false
 			}
 			depth += node.prefixLen
 		}
@@ -117,7 +127,7 @@ func (t *tree) LongestPrefix(key Key) (Value, bool) {
 		depth++
 	}
 
-	return nil, false
+	return nil, nil, false
 }
 
 func (t *tree) Minimum() (value Value, found bool) {

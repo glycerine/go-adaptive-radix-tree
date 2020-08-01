@@ -1373,32 +1373,64 @@ func TestTreeInsertAndSearchKeyWithUnicodeAccentChar(t *testing.T) {
 	assert.Equal(t, string(accent), v)
 }
 
+func TestTreeLongestPrefixSingle(t *testing.T) {
+	tree := newTree()
+	tree.Insert(Key("0022"), 0.1)
+
+	k, v, found := tree.LongestPrefix(Key("00"))
+	assert.False(t, found)
+	assert.Nil(t, k)
+	assert.Nil(t, v)
+
+	k, v, found = tree.LongestPrefix(Key("002233"))
+	assert.True(t, found)
+	assert.Equal(t, Key("0022"), k)
+	assert.Equal(t, 0.1, v)
+}
+
 func TestTreeLongestPrefix(t *testing.T) {
 	tree := newTree()
-	keys := []string{"A", "Abc", "a", "aa"}
-	vals := []float64{0.1, 0.2, 0.3, 0.4}
+	keys := []string{"A", "Abc", "a", "aa", "aabb"}
+	vals := []float64{0.1, 0.2, 0.3, 0.4, 0.5}
 
 	for k, term := range keys {
 		tree.Insert(Key(term), vals[k])
 	}
 
-	v, found := tree.LongestPrefix(Key("X"))
+	_, v, found := tree.LongestPrefix(Key("X"))
 	assert.False(t, found)
 	assert.Nil(t, v)
 
-	v, found = tree.LongestPrefix(Key("AAbc"))
+	_, v, found = tree.LongestPrefix(Key("AAbc"))
 	assert.False(t, found)
 	assert.Nil(t, v)
 
-	v, found = tree.LongestPrefix(Key("A"))
+	_, v, found = tree.LongestPrefix(Key("A"))
 	assert.True(t, found)
 	assert.Equal(t, vals[0], v)
 
-	v, found = tree.LongestPrefix(Key("Abcdef"))
+	_, v, found = tree.LongestPrefix(Key("Abcdef"))
 	assert.True(t, found)
 	assert.Equal(t, vals[1], v)
 
-	v, found = tree.LongestPrefix(Key("aaaaaa"))
+	_, v, found = tree.LongestPrefix(Key("aaaaaa"))
 	assert.True(t, found)
 	assert.Equal(t, vals[3], v)
+}
+
+func BenchmarkTestTreeLongestPrefix(b *testing.B) {
+	tree := newTree()
+	keys := []string{"1", "2", "3", "11", "22", "01", "002", "001", "0011", "00112", "001122", "0011223", "00112233", "0011223355"}
+	for _, k := range keys {
+		tree.Insert(Key(k), k)
+	}
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+		key, _, found := tree.LongestPrefix(Key("00112233"))
+		if found {
+			fmt.Println(string(key))
+		}
+	}
+
 }
