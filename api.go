@@ -78,6 +78,9 @@ type Tree interface {
 	// If the key already in the tree then return oldValue, true and nil, false otherwise.
 	Insert(key Key, value Value) (oldValue Value, updated bool)
 
+	// InsertFromMap insert's from an existing map to the tree
+	InsertFromMap(m map[string]interface{})
+
 	// Delete removes a key from the tree and key's value, true is returned.
 	// If the key does not exists then nothing is done and nil, false is returned.
 	Delete(key Key) (value Value, deleted bool)

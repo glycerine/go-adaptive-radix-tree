@@ -54,32 +54,30 @@ func TestCC(t *testing.T) {
 }
 
 func TestConcurrentTreeOperations(t *testing.T) {
-	r := New()
 
-	initialKeys := []string{
-		"a",
-		"foobar",
-		"foo/bar/baz",
-		"foo/baz/bar",
-		"foo/zip/zap",
-		"zipzap",
+	initialMap := map[string]interface{}{
+		"abc":         "a",
+		"foobar":      "b",
+		"foo/bar/baz": "c",
+		"foo/baz/bar": "d",
+		"foo/zip/zap": "e",
+		"zipzap":      "zipzap",
 	}
-	addedKeys := []string{
-		"vanilla",
-		"vanilla-icecream",
-		"vanilla-icecream-milkshake",
-		"vanilla-icecream-cake",
-		"blackforest",
-		"blackforest-cake",
+	addedMap := map[string]interface{}{
+		"vanilla":                    "a",
+		"vanilla-icecream":           "b",
+		"vanilla-icecream-milkshake": "c",
+		"vanilla-icecream-cake":      "d",
+		"blackforest":                "e",
+		"blackforest-cake":           "blackforest-cake",
 	}
 	removedKeys := []string{
 		"vanilla-icecream",
 		"vanilla-icecream-milkshake",
 		"vanilla-icecream-cake",
 	}
-	for _, k := range initialKeys {
-		r.Insert(Key(k), k)
-	}
+
+	r := NewFromMap(initialMap)
 
 	type exp struct {
 		inp string
@@ -92,9 +90,7 @@ func TestConcurrentTreeOperations(t *testing.T) {
 	go func() {
 		t.Log("Add keys")
 		defer wg.Done()
-		for _, k := range addedKeys {
-			r.Insert(Key(k), k)
-		}
+		r.InsertFromMap(addedMap)
 	}()
 
 	go func() {
@@ -148,7 +144,7 @@ func TestConcurrentTreeOperations(t *testing.T) {
 
 	wg.Wait()
 
-	if r.Size() != len(initialKeys)+len(addedKeys)-len(removedKeys) {
-		t.Fatalf("bad len: %v %v", r.Size(), len(initialKeys)+len(addedKeys)-len(removedKeys))
+	if r.Size() != len(initialMap)+len(addedMap)-len(removedKeys) {
+		t.Fatalf("bad len: %v %v", r.Size(), len(initialMap)+len(addedMap)-len(removedKeys))
 	}
 }

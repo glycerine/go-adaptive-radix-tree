@@ -26,6 +26,12 @@ func (t *tree) Insert(key Key, value Value) (Value, bool) {
 	return oldValue, updated
 }
 
+func (t *tree) InsertFromMap(m map[string]interface{}) {
+	for k, v := range m {
+		t.Insert([]byte(k), v)
+	}
+}
+
 func (t *tree) Delete(key Key) (Value, bool) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -147,13 +153,6 @@ func (t *tree) Size() int {
 	}
 
 	return t.size
-}
-
-// InsertFromMap insert's from an existing map to the tree
-func (t *tree) InsertFromMap(m map[string]interface{}) {
-	for k, v := range m {
-		t.Insert([]byte(k), v)
-	}
 }
 
 func (t *tree) recursiveInsert(curNode **artNode, key Key, value Value, depth int) (Value, bool) {
