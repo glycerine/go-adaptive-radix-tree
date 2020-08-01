@@ -1372,3 +1372,32 @@ func TestTreeInsertAndSearchKeyWithUnicodeAccentChar(t *testing.T) {
 	assert.True(t, found)
 	assert.Equal(t, string(accent), v)
 }
+
+func TestTreeLongestPrefix(t *testing.T) {
+	tree := newTree()
+	searchTerms := []string{"A", "Abc", "a", "aa"}
+
+	for _, term := range searchTerms {
+		tree.Insert(Key(term), term)
+	}
+
+	v, found := tree.LongestPrefix(Key("X"))
+	assert.False(t, found)
+	assert.Nil(t, v)
+
+	v, found = tree.LongestPrefix(Key("AAbc"))
+	assert.False(t, found)
+	assert.Nil(t, v)
+
+	v, found = tree.LongestPrefix(Key("A"))
+	assert.True(t, found)
+	assert.Equal(t, "A", v)
+
+	v, found = tree.LongestPrefix(Key("Abcdef"))
+	assert.True(t, found)
+	assert.Equal(t, "Abc", v)
+
+	v, found = tree.LongestPrefix(Key("aaaaaa"))
+	assert.True(t, found)
+	assert.Equal(t, "aa", v)
+}

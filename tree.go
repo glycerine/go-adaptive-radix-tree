@@ -77,27 +77,71 @@ func (t *tree) Search(key Key) (Value, bool) {
 	return nil, false
 }
 
+func (t *tree) LongestPrefix(key Key) (Value, bool) {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
+	current := t.root
+	depth := 0
+
+	for current != nil {
+		if current.isLeaf() {
+			leaf := current.leaf()
+			if leaf.match(key) {
+				return leaf.value, true
+			}
+			return leaf.value, true
+		}
+
+		node := current.node()
+		if node.prefixLen > 0 {
+			prefixLen := node.match(key, depth)
+			if prefixLen != min(node.prefixLen, MaxPrefixLen) {
+				return nil, false
+			}
+			depth += node.prefixLen
+		}
+
+		next := current.findChild(key.charAt(depth))
+		if *next != nil {
+			current = *next
+		} else {
+			current = nil
+		}
+		depth++
+	}
+
+	return nil, false
+}
+
 func (t *tree) Minimum() (value Value, found bool) {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
 	if t == nil || t.root == nil {
 		return nil, false
 	}
 
 	leaf := t.root.minimum()
-
 	return leaf.value, true
 }
 
 func (t *tree) Maximum() (value Value, found bool) {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
 	if t == nil || t.root == nil {
 		return nil, false
 	}
 
 	leaf := t.root.maximum()
-
 	return leaf.value, true
 }
 
 func (t *tree) Size() int {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
 	if t == nil || t.root == nil {
 		return 0
 	}

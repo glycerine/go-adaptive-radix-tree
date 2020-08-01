@@ -86,6 +86,10 @@ type Tree interface {
 	// If the key exists then return value, true and nil, false otherwise.
 	Search(key Key) (value Value, found bool)
 
+	// LongestPrefix is like Search, but instead of an
+	// exact match, it will return the longest prefix match.
+	LongestPrefix(key Key) (Value, bool)
+
 	// ForEach executes a provided callback once per leaf node by default.
 	// The callback iteration is terminated if the callback function returns false.
 	// Pass TraverseXXX as an options to execute a provided callback
