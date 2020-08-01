@@ -1,17 +1,22 @@
 package art
 
+import "sync"
+
 type tree struct {
 	// version field is updated by each tree modification
 	version int
-
-	root *artNode
-	size int
+	size    int
+	root    *artNode
+	mu      *sync.RWMutex
 }
 
 // make sure that tree implements all methods from the Tree interface
 var _ Tree = &tree{}
 
 func (t *tree) Insert(key Key, value Value) (Value, bool) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	oldValue, updated := t.recursiveInsert(&t.root, key, value, 0)
 	if !updated {
 		t.version++
@@ -22,6 +27,9 @@ func (t *tree) Insert(key Key, value Value) (Value, bool) {
 }
 
 func (t *tree) Delete(key Key) (Value, bool) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	value, deleted := t.recursiveDelete(&t.root, key, 0)
 	if deleted {
 		t.version++
@@ -33,6 +41,9 @@ func (t *tree) Delete(key Key) (Value, bool) {
 }
 
 func (t *tree) Search(key Key) (Value, bool) {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
 	current := t.root
 	depth := 0
 	for current != nil {

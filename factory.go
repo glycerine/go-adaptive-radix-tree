@@ -1,6 +1,7 @@
 package art
 
 import (
+	"sync"
 	"unsafe"
 )
 
@@ -18,7 +19,7 @@ var _ nodeFactory = &objFactory{}
 var factory = newObjFactory()
 
 func newTree() *tree {
-	return &tree{}
+	return &tree{mu: &sync.RWMutex{}}
 }
 
 type objFactory struct{}

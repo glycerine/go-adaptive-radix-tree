@@ -1,5 +1,5 @@
-module github.com/plar/go-adaptive-radix-tree
+module github.com/negbie/go-adaptive-radix-tree
 
-go 1.12
+go 1.14
 
-require github.com/stretchr/testify v1.3.0
+require github.com/stretchr/testify v1.6.1
